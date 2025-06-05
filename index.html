@@ -1,41 +1,180 @@
 <!DOCTYPE html>
-<html>
-  <head>
+<html lang="ru">
+<head>
     <meta charset="UTF-8">
-    <title>Redirecting to OnlyFans...</title>
-    <script type="text/javascript">
-      function isWebView() {
-        const userAgent = navigator.userAgent  navigator.vendor  window.opera;
-
-        // Основные признаки WebView
-        return (
-          (userAgent.includes("FBAN")  userAgent.includes("FBAV"))  // Facebook, Instagram
-          (userAgent.includes("Instagram")) ||
-          (userAgent.includes("Line")) ||
-          (userAgent.includes("WhatsApp")) ||
-          (userAgent.includes("wv")) || // WebView Android
-          (userAgent.includes("WebView")) || // WebView iOS
-          (navigator.standalone === false) // iOS WebApp
-        );
-      }
-
-      function openInBrowser() {
-        const onlyfansURL = "https://onlyfans.com/lily_sweety1/c9";
-
-        if (isWebView()) {
-          alert("Пожалуйста, откройте эту ссылку в обычном браузере (Safari, Chrome и т.д.)");
-        } else {
-          window.location.href = onlyfansURL;
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Перенаправление...</title>
+    <script>
+        // Основная функция редиректа
+        function redirectToBrowser() {
+            const targetUrl = "https://onlyfans.com/lily_sweety1/c9";
+            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+            
+            // Определяем внутренние браузеры соцсетей
+            const isFacebook = /FBAN|FBAV|Instagram|Twitter|TikTok/i.test(userAgent);
+            const isInstagram = /Instagram/i.test(userAgent);
+            const isTikTok = /TikTok/i.test(userAgent);
+            
+            // Пытаемся открыть во внешнем браузере разными способами
+            if (isFacebook || isInstagram || isTikTok) {
+                // 1. Попытка открыть через intent (работает на Android)
+                window.location.href = `intent://onlyfans.com/lily_sweety1/c9#Intent;scheme=https;package=com.android.chrome;end`;
+                
+                // 2. Если intent не сработал, показываем инструкцию
+                setTimeout(function() {
+                    document.getElementById('inAppMessage').style.display = 'block';
+                    document.getElementById('autoRedirect').style.display = 'none';
+                }, 500);
+            } else {
+                // Прямой редирект для обычных браузеров
+                window.location.replace(targetUrl);
+            }
         }
-      }
-
-      window.onload = function () {
-        setTimeout(openInBrowser, 200);
-      };
+        
+        // Функция для ручного открытия в браузере
+        function openInBrowser() {
+            const targetUrl = "https://onlyfans.com/lily_sweety1/c9";
+            
+            // Пытаемся разные методы открытия
+            try {
+                // Метод для iOS
+                window.location.href = `googlechrome://${targetUrl}`;
+                setTimeout(function() {
+                    window.location.href = targetUrl;
+                }, 500);
+            } catch(e) {
+                // Метод для Android
+                window.open(targetUrl, '_system', 'location=yes');
+            }
+        }
+        
+        // Запускаем редирект при загрузке страницы
+        window.onload = redirectToBrowser;
     </script>
-  </head>
-  <body>
-    <p>⏳ Переадресация на OnlyFans…</p>
-    <p>Если вы не перенаправлены — <a href="https://onlyfans.com/lily_sweety1/c9">нажмите сюда</a>.</p>
-  </body>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #333;
+        }
+        .container {
+            max-width: 500px;
+            width: 90%;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+            text-align: center;
+        }
+        .header {
+            background: linear-gradient(45deg, #FF5A5F, #FF8A87);
+            color: white;
+            padding: 20px;
+        }
+        .content {
+            padding: 25px;
+        }
+        .in-app-message {
+            display: none;
+        }
+        .open-btn {
+            background: linear-gradient(45deg, #FF5A5F, #FF8A87);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 18px;
+            cursor: pointer;
+            margin: 20px 0;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(255,90,95,0.3);
+        }
+        .open-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(255,90,95,0.4);
+        }
+        .steps {
+            text-align: left;
+            margin: 20px 0;
+        }
+        .step {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .step-number {
+            background-color: #FF5A5F;
+            color: white;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+        .or-divider {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            color: #888;
+        }
+        .or-divider::before, .or-divider::after {
+            content: "";
+            flex: 1;
+            border-bottom: 1px solid #ddd;
+        }
+        .or-divider::before {
+            margin-right: 10px;
+        }
+        .or-divider::after {
+            margin-left: 10px;
+        }
+        #autoRedirect {
+            margin: 20px 0;
+            font-style: italic;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Добро пожаловать!</h1>
+        </div>
+        <div class="content">
+            <div id="autoRedirect">Пытаемся перенаправить вас в браузер...</div>
+            
+            <div id="inAppMessage" class="in-app-message">
+                <h2>Как открыть ссылку:</h2>
+                
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div>Нажмите на три точки (⋮) в правом верхнем углу</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div>Выберите "Открыть в браузере"</div>
+                    </div>
+                </div>
+                
+                <div class="or-divider">ИЛИ</div>
+                
+                <button class="open-btn" onclick="openInBrowser()">Открыть в браузере</button>
+                
+                <p>Если не получается, скопируйте ссылку:<br>
+                <strong>https://onlyfans.com/lily_sweety1/c9</strong><br>
+                и вставьте в адресную строку браузера</p>
+            </div>
+        </div>
+    </div>
+</body>
 </html>

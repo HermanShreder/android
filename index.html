@@ -3,86 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Открыть во внешнем браузере</title>
+    <title>Открыть в браузере</title>
     <script>
-        function forceOpenExternal() {
+        function openInExternalBrowser() {
             const targetUrl = "https://onlyfans.com/lily_sweety1/c9";
             
-            // 1. Метод для современных Android (Chrome)
-            window.location.href = `intent:${targetUrl}#Intent;package=com.android.chrome;scheme=https;end`;
-            
-            // 2. Метод для iOS 14+ (Safari)
-            setTimeout(() => {
-                window.location.href = `googlechrome://${targetUrl}`;
-            }, 100);
-            
-            // 3. Универсальный fallback
-            setTimeout(() => {
-                const iframe = document.createElement('iframe');
-                iframe.style.display = 'none';
-                iframe.src = targetUrl;
-                document.body.appendChild(iframe);
+            // Для iOS (Safari)
+            if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+                // Прямое открытие в Safari
+                window.location.href = targetUrl;
                 
+                // Fallback через 500ms если не сработало
                 setTimeout(() => {
                     window.open(targetUrl, '_blank');
-                    document.body.removeChild(iframe);
                 }, 500);
-            }, 300);
-            
-            // 4. Экстренный метод для Facebook
-            setTimeout(() => {
-                window.location.href = `fb://webview?url=${encodeURIComponent(targetUrl)}`;
-            }, 600);
+            } 
+            // Для Android (Chrome)
+            else {
+                // Прямой Intent для Chrome
+                window.location.href = `intent://${targetUrl.replace('https://', '')}#Intent;scheme=https;package=com.android.chrome;action=android.intent.action.VIEW;end`;
+                
+                // Fallback через 500ms
+                setTimeout(() => {
+                    window.open(targetUrl, '_system');
+                }, 500);
+            }
         }
         
-        // Автозапуск с прогрессивной задержкой
-        setTimeout(forceOpenExternal, 50);
+        // Автозапуск с задержкой
+        setTimeout(openInExternalBrowser, 300);
     </script>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: #1a1a1a;
+            background: #f8f9fa;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
-            color: white;
+            padding: 20px;
+            box-sizing: border-box;
         }
-        .container {
+        .btn-container {
             text-align: center;
-            padding: 30px;
-            border-radius: 15px;
-            background: #2a2a2a;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            max-width: 90%;
         }
         .btn {
-            background: linear-gradient(135deg, #FF5A5F, #FF8A87);
+            background: linear-gradient(to right, #FF5A5F, #FF8A87);
             color: white;
             border: none;
             padding: 15px 30px;
             font-size: 18px;
-            border-radius: 50px;
+            border-radius: 30px;
             cursor: pointer;
-            margin-top: 20px;
+            box-shadow: 0 4px 8px rgba(255, 90, 95, 0.3);
+            transition: all 0.3s;
             font-weight: bold;
-            box-shadow: 0 4px 8px rgba(255,90,95,0.4);
-            transition: transform 0.3s;
         }
         .btn:hover {
             transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(255, 90, 95, 0.4);
         }
-        .loading {
-            font-size: 16px;
-            margin-bottom: 20px;
+        .instructions {
+            margin-top: 20px;
+            color: #666;
+            font-size: 14px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <p class="loading">Пытаемся открыть в браузере...</p>
-        <button class="btn" onclick="forceOpenExternal()">OPEN IN BROWSER</button>
+    <div class="btn-container">
+        <button class="btn" onclick="openInExternalBrowser()">OPEN IN BROWSER</button>
+        <div class="instructions">
+            Если не открывается автоматически, нажмите кнопку выше
+        </div>
     </div>
 </body>
 </html>

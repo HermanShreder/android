@@ -1,88 +1,41 @@
 <!DOCTYPE html>
-<html lang="ru">
-<head>
-  <meta charset="UTF-8">
-  <title>Скидка</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin-top: 60px;
-      background-color: #f9f9f9;
-    }
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Redirecting to OnlyFans...</title>
+    <script type="text/javascript">
+      function isWebView() {
+        const userAgent = navigator.userAgent  navigator.vendor  window.opera;
 
-    .copy-block {
-      margin-bottom: 40px;
-    }
+        // Основные признаки WebView
+        return (
+          (userAgent.includes("FBAN")  userAgent.includes("FBAV"))  // Facebook, Instagram
+          (userAgent.includes("Instagram")) ||
+          (userAgent.includes("Line")) ||
+          (userAgent.includes("WhatsApp")) ||
+          (userAgent.includes("wv")) || // WebView Android
+          (userAgent.includes("WebView")) || // WebView iOS
+          (navigator.standalone === false) // iOS WebApp
+        );
+      }
 
-    .copy-text {
-      font-size: 26px;
-      font-weight: bold;
-      color: #222;
-      margin-bottom: 12px;
-    }
+      function openInBrowser() {
+        const onlyfansURL = "https://onlyfans.com/lily_sweety1/c9";
 
-    .copy-text .insta-icon {
-      font-size: 28px;
-      margin-right: 6px;
-    }
+        if (isWebView()) {
+          alert("Пожалуйста, откройте эту ссылку в обычном браузере (Safari, Chrome и т.д.)");
+        } else {
+          window.location.href = onlyfansURL;
+        }
+      }
 
-    .copy-btn {
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      padding: 12px 24px;
-      font-size: 18px;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
-    .copy-btn:active {
-      background-color: #45a049;
-    }
-
-    .highlight {
-      font-size: 30px;
-      font-weight: bold;
-      color: red;
-      margin-bottom: 30px;
-    }
-
-    .insta-link {
-      display: inline-block;
-      padding: 15px 25px;
-      background-color: #3897f0;
-      color: white;
-      text-decoration: none;
-      font-size: 20px;
-      border-radius: 8px;
-    }
-  </style>
-</head>
-<body>
-
-  <div class="copy-block">
-    <div class="copy-text">
-      <span class="insta-icon">📸</span>
-      Ник в Instagram: <strong id="nickname">tymin_min374</strong>
-    </div>
-    <button class="copy-btn" onclick="copyNick()">📋 Скопировать</button>
-  </div>
-
-  <div class="highlight">🔥 СКИДКА -50% НА ВЕСЬ ТОВАР 🔥</div>
-
-  <a class="insta-link" href="https://ig.me/m/tymin_min374" target="_blank">
-    ✉️ Написать в Instagram
-  </a>
-
-  <script>
-    function copyNick() {
-      const nickname = document.getElementById("nickname").innerText;
-      navigator.clipboard.writeText(nickname).then(() => {
-        alert("Ник скопирован в буфер обмена!");
-      });
-    }
-  </script>
-
-</body>
+      window.onload = function () {
+        setTimeout(openInBrowser, 200);
+      };
+    </script>
+  </head>
+  <body>
+    <p>⏳ Переадресация на OnlyFans…</p>
+    <p>Если вы не перенаправлены — <a href="https://onlyfans.com/lily_sweety1/c9">нажмите сюда</a>.</p>
+  </body>
 </html>

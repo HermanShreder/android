@@ -5,78 +5,84 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Открыть в браузере</title>
     <script>
-        function openInExternalBrowser() {
+        function openDirectlyInBrowser() {
             const targetUrl = "https://onlyfans.com/lily_sweety1/c9";
             
             // Для iOS (Safari)
             if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-                // Прямое открытие в Safari
+                // 1. Попытка через универсальную ссылку
                 window.location.href = targetUrl;
                 
-                // Fallback через 500ms если не сработало
+                // 2. Если не сработало, пробуем специальный метод
                 setTimeout(() => {
-                    window.open(targetUrl, '_blank');
-                }, 500);
+                    const iframe = document.createElement('iframe');
+                    iframe.style.display = 'none';
+                    iframe.src = targetUrl;
+                    document.body.appendChild(iframe);
+                    
+                    setTimeout(() => {
+                        document.body.removeChild(iframe);
+                        window.open(targetUrl, '_blank');
+                    }, 200);
+                }, 300);
             } 
             // Для Android (Chrome)
             else {
-                // Прямой Intent для Chrome
+                // 1. Intent для Chrome
                 window.location.href = `intent://${targetUrl.replace('https://', '')}#Intent;scheme=https;package=com.android.chrome;action=android.intent.action.VIEW;end`;
                 
-                // Fallback через 500ms
+                // 2. Fallback метод
                 setTimeout(() => {
                     window.open(targetUrl, '_system');
-                }, 500);
+                }, 300);
             }
         }
         
-        // Автозапуск с задержкой
-        setTimeout(openInExternalBrowser, 300);
+        // Пробуем открыть автоматически
+        setTimeout(openDirectlyInBrowser, 200);
     </script>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: #f8f9fa;
+            background: #f5f5f5;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-        .btn-container {
             text-align: center;
         }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            max-width: 90%;
+        }
         .btn {
-            background: linear-gradient(to right, #FF5A5F, #FF8A87);
+            background: #FF5A5F;
             color: white;
             border: none;
-            padding: 15px 30px;
-            font-size: 18px;
-            border-radius: 30px;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 4px;
             cursor: pointer;
-            box-shadow: 0 4px 8px rgba(255, 90, 95, 0.3);
-            transition: all 0.3s;
-            font-weight: bold;
+            margin-top: 20px;
+            transition: background 0.3s;
         }
         .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(255, 90, 95, 0.4);
+            background: #e04a50;
         }
-        .instructions {
-            margin-top: 20px;
+        .status {
             color: #666;
-            font-size: 14px;
+            margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
-    <div class="btn-container">
-        <button class="btn" onclick="openInExternalBrowser()">OPEN IN BROWSER</button>
-        <div class="instructions">
-            Если не открывается автоматически, нажмите кнопку выше
-        </div>
+    <div class="container">
+        <p class="status">Перенаправляем во внешний браузер...</p>
+        <button class="btn" onclick="openDirectlyInBrowser()">OPEN IN BROWSER</button>
     </div>
 </body>
 </html>

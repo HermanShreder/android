@@ -3,177 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Перенаправление...</title>
+    <title>Открыть в браузере</title>
     <script>
-        // Основная функция редиректа
-        function redirectToBrowser() {
-            const targetUrl = "https://onlyfans.com/lily_sweety1/c9";
-            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-            
-            // Определяем внутренние браузеры соцсетей
-            const isFacebook = /FBAN|FBAV|Instagram|Twitter|TikTok/i.test(userAgent);
-            const isInstagram = /Instagram/i.test(userAgent);
-            const isTikTok = /TikTok/i.test(userAgent);
-            
-            // Пытаемся открыть во внешнем браузере разными способами
-            if (isFacebook || isInstagram || isTikTok) {
-                // 1. Попытка открыть через intent (работает на Android)
-                window.location.href = `intent://onlyfans.com/lily_sweety1/c9#Intent;scheme=https;package=com.android.chrome;end`;
-                
-                // 2. Если intent не сработал, показываем инструкцию
-                setTimeout(function() {
-                    document.getElementById('inAppMessage').style.display = 'block';
-                    document.getElementById('autoRedirect').style.display = 'none';
-                }, 500);
-            } else {
-                // Прямой редирект для обычных браузеров
-                window.location.replace(targetUrl);
-            }
-        }
-        
-        // Функция для ручного открытия в браузере
-        function openInBrowser() {
+        function openInExternalBrowser() {
             const targetUrl = "https://onlyfans.com/lily_sweety1/c9";
             
-            // Пытаемся разные методы открытия
-            try {
-                // Метод для iOS
-                window.location.href = `googlechrome://${targetUrl}`;
-                setTimeout(function() {
+            // Для iOS (пробуем Safari)
+            if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+                window.location.href = `x-web-search://?${encodeURIComponent(targetUrl)}`;
+                setTimeout(() => {
                     window.location.href = targetUrl;
                 }, 500);
-            } catch(e) {
-                // Метод для Android
-                window.open(targetUrl, '_system', 'location=yes');
+            } 
+            // Для Android (пробуем Chrome)
+            else {
+                window.location.href = `intent://${targetUrl.replace('https://', '')}#Intent;scheme=https;package=com.android.chrome;end`;
+                setTimeout(() => {
+                    window.open(targetUrl, '_system');
+                }, 500);
             }
         }
         
-        // Запускаем редирект при загрузке страницы
-        window.onload = redirectToBrowser;
+        // Пробуем автоматически открыть при загрузке
+        window.onload = function() {
+            setTimeout(openInExternalBrowser, 300);
+        };
     </script>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f8f9fa;
-            margin: 0;
-            padding: 0;
+            background: #f8f9fa;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            color: #333;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
         }
-        .container {
-            max-width: 500px;
-            width: 90%;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            overflow: hidden;
+        .btn-container {
             text-align: center;
         }
-        .header {
-            background: linear-gradient(45deg, #FF5A5F, #FF8A87);
+        .btn {
+            background: linear-gradient(to right, #FF5A5F, #FF8A87);
             color: white;
-            padding: 20px;
-        }
-        .content {
-            padding: 25px;
-        }
-        .in-app-message {
-            display: none;
-        }
-        .open-btn {
-            background: linear-gradient(45deg, #FF5A5F, #FF8A87);
-            color: white;
-            padding: 15px 30px;
             border: none;
-            border-radius: 50px;
+            padding: 15px 30px;
             font-size: 18px;
+            border-radius: 30px;
             cursor: pointer;
-            margin: 20px 0;
+            box-shadow: 0 4px 8px rgba(255, 90, 95, 0.3);
             transition: all 0.3s;
-            box-shadow: 0 4px 8px rgba(255,90,95,0.3);
+            font-weight: bold;
         }
-        .open-btn:hover {
+        .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(255,90,95,0.4);
+            box-shadow: 0 6px 12px rgba(255, 90, 95, 0.4);
         }
-        .steps {
-            text-align: left;
-            margin: 20px 0;
-        }
-        .step {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        .step-number {
-            background-color: #FF5A5F;
-            color: white;
-            width: 25px;
-            height: 25px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-right: 10px;
-            flex-shrink: 0;
-        }
-        .or-divider {
-            display: flex;
-            align-items: center;
-            margin: 20px 0;
-            color: #888;
-        }
-        .or-divider::before, .or-divider::after {
-            content: "";
-            flex: 1;
-            border-bottom: 1px solid #ddd;
-        }
-        .or-divider::before {
-            margin-right: 10px;
-        }
-        .or-divider::after {
-            margin-left: 10px;
-        }
-        #autoRedirect {
-            margin: 20px 0;
-            font-style: italic;
+        .instructions {
+            margin-top: 20px;
             color: #666;
+            font-size: 14px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>Добро пожаловать!</h1>
-        </div>
-        <div class="content">
-            <div id="autoRedirect">Пытаемся перенаправить вас в браузер...</div>
-            
-            <div id="inAppMessage" class="in-app-message">
-                <h2>Как открыть ссылку:</h2>
-                
-                <div class="steps">
-                    <div class="step">
-                        <div class="step-number">1</div>
-                        <div>Нажмите на три точки (⋮) в правом верхнем углу</div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">2</div>
-                        <div>Выберите "Открыть в браузере"</div>
-                    </div>
-                </div>
-                
-                <div class="or-divider">ИЛИ</div>
-                
-                <button class="open-btn" onclick="openInBrowser()">Открыть в браузере</button>
-                
-                <p>Если не получается, скопируйте ссылку:<br>
-                <strong>https://onlyfans.com/lily_sweety1/c9</strong><br>
-                и вставьте в адресную строку браузера</p>
-            </div>
+    <div class="btn-container">
+        <button class="btn" onclick="openInExternalBrowser()">OPEN IN BROWSER</button>
+        <div class="instructions">
+            Если не открывается автоматически, нажмите кнопку выше
         </div>
     </div>
 </body>

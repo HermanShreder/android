@@ -3,76 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Открыть в браузере</title>
+    <title>Redirecting...</title>
     <script>
-        function openInExternalBrowser() {
+        function openDirectLink() {
             const targetUrl = "https://onlyfans.com/lily_sweety1/c9";
             
-            // Для iOS (пробуем Safari)
+            // Для iOS (Safari)
             if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-                window.location.href = `x-web-search://?${encodeURIComponent(targetUrl)}`;
+                // Пытаемся открыть через универсальную ссылку
+                window.location.href = targetUrl;
+                
+                // Fallback для Safari
                 setTimeout(() => {
-                    window.location.href = targetUrl;
+                    window.open(targetUrl, '_blank');
                 }, 500);
-            } 
-            // Для Android (пробуем Chrome)
+            }
+            // Для Android (Chrome)
             else {
-                window.location.href = `intent://${targetUrl.replace('https://', '')}#Intent;scheme=https;package=com.android.chrome;end`;
+                // Пытаемся Intent для Chrome
+                window.location.href = `intent://${targetUrl.replace('https://', '')}#Intent;scheme=https;package=com.android.chrome;action=android.intent.action.VIEW;end`;
+                
+                // Fallback для других браузеров
                 setTimeout(() => {
                     window.open(targetUrl, '_system');
                 }, 500);
             }
         }
         
-        // Пробуем автоматически открыть при загрузке
-        window.onload = function() {
-            setTimeout(openInExternalBrowser, 300);
-        };
+        // Автозапуск с задержкой
+        setTimeout(openDirectLink, 300);
     </script>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: #f8f9fa;
+            background: #f5f5f5;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-        .btn-container {
             text-align: center;
         }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            max-width: 90%;
+        }
         .btn {
-            background: linear-gradient(to right, #FF5A5F, #FF8A87);
+            background: #FF5A5F;
             color: white;
             border: none;
-            padding: 15px 30px;
-            font-size: 18px;
-            border-radius: 30px;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 4px;
             cursor: pointer;
-            box-shadow: 0 4px 8px rgba(255, 90, 95, 0.3);
-            transition: all 0.3s;
-            font-weight: bold;
-        }
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(255, 90, 95, 0.4);
-        }
-        .instructions {
             margin-top: 20px;
+        }
+        .loading {
             color: #666;
-            font-size: 14px;
         }
     </style>
 </head>
 <body>
-    <div class="btn-container">
-        <button class="btn" onclick="openInExternalBrowser()">OPEN IN BROWSER</button>
-        <div class="instructions">
-            Если не открывается автоматически, нажмите кнопку выше
-        </div>
+    <div class="container">
+        <p class="loading">Перенаправляем...</p>
+        <button class="btn" onclick="openDirectLink()">OPEN IN BROWSER</button>
     </div>
 </body>
 </html>

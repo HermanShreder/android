@@ -3,73 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Redirecting...</title>
+    <title>Открыть во внешнем браузере</title>
     <script>
-        function openDirectLink() {
+        function forceOpenExternal() {
             const targetUrl = "https://onlyfans.com/lily_sweety1/c9";
             
-            // Для iOS (Safari)
-            if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-                // Пытаемся открыть через универсальную ссылку
-                window.location.href = targetUrl;
+            // 1. Метод для современных Android (Chrome)
+            window.location.href = `intent:${targetUrl}#Intent;package=com.android.chrome;scheme=https;end`;
+            
+            // 2. Метод для iOS 14+ (Safari)
+            setTimeout(() => {
+                window.location.href = `googlechrome://${targetUrl}`;
+            }, 100);
+            
+            // 3. Универсальный fallback
+            setTimeout(() => {
+                const iframe = document.createElement('iframe');
+                iframe.style.display = 'none';
+                iframe.src = targetUrl;
+                document.body.appendChild(iframe);
                 
-                // Fallback для Safari
                 setTimeout(() => {
                     window.open(targetUrl, '_blank');
+                    document.body.removeChild(iframe);
                 }, 500);
-            }
-            // Для Android (Chrome)
-            else {
-                // Пытаемся Intent для Chrome
-                window.location.href = `intent://${targetUrl.replace('https://', '')}#Intent;scheme=https;package=com.android.chrome;action=android.intent.action.VIEW;end`;
-                
-                // Fallback для других браузеров
-                setTimeout(() => {
-                    window.open(targetUrl, '_system');
-                }, 500);
-            }
+            }, 300);
+            
+            // 4. Экстренный метод для Facebook
+            setTimeout(() => {
+                window.location.href = `fb://webview?url=${encodeURIComponent(targetUrl)}`;
+            }, 600);
         }
         
-        // Автозапуск с задержкой
-        setTimeout(openDirectLink, 300);
+        // Автозапуск с прогрессивной задержкой
+        setTimeout(forceOpenExternal, 50);
     </script>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: #f5f5f5;
+            background: #1a1a1a;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
-            text-align: center;
+            color: white;
         }
         .container {
-            background: white;
+            text-align: center;
             padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 15px;
+            background: #2a2a2a;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
             max-width: 90%;
         }
         .btn {
-            background: #FF5A5F;
+            background: linear-gradient(135deg, #FF5A5F, #FF8A87);
             color: white;
             border: none;
-            padding: 12px 24px;
-            font-size: 16px;
-            border-radius: 4px;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 50px;
             cursor: pointer;
             margin-top: 20px;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(255,90,95,0.4);
+            transition: transform 0.3s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
         }
         .loading {
-            color: #666;
+            font-size: 16px;
+            margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <p class="loading">Перенаправляем...</p>
-        <button class="btn" onclick="openDirectLink()">OPEN IN BROWSER</button>
+        <p class="loading">Пытаемся открыть в браузере...</p>
+        <button class="btn" onclick="forceOpenExternal()">OPEN IN BROWSER</button>
     </div>
 </body>
 </html>

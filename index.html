@@ -10,21 +10,7 @@
             
             // Для iOS (Safari)
             if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-                // 1. Попытка через универсальную ссылку
-                window.location.href = targetUrl;
-                
-                // 2. Если не сработало, пробуем специальный метод
-                setTimeout(() => {
-                    const iframe = document.createElement('iframe');
-                    iframe.style.display = 'none';
-                    iframe.src = targetUrl;
-                    document.body.appendChild(iframe);
-                    
-                    setTimeout(() => {
-                        document.body.removeChild(iframe);
-                        window.open(targetUrl, '_blank');
-                    }, 200);
-                }, 300);
+                window.location.href = 'x-safari-' + targetUrl;
             } 
             // Для Android (Chrome)
             else {

@@ -7,38 +7,20 @@
     <script>
         function openDirectlyInBrowser() {
             const targetUrl = "https://onlyfans.com/lily_sweety1/c9";
-            
-            // Для iOS (Safari)
+
             if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-                // 1. Попытка через универсальную ссылку
-                window.location.href = targetUrl;
-                
-                // 2. Если не сработало, пробуем специальный метод
-                setTimeout(() => {
-                    const iframe = document.createElement('iframe');
-                    iframe.style.display = 'none';
-                    iframe.src = targetUrl;
-                    document.body.appendChild(iframe);
-                    
-                    setTimeout(() => {
-                        document.body.removeChild(iframe);
-                        window.open(targetUrl, '_blank');
-                    }, 200);
-                }, 300);
-            } 
-            // Для Android (Chrome)
-            else {
-                // 1. Intent для Chrome
-                window.location.href = intent://${targetUrl.replace('https://', '')}#Intent;scheme=https;package=com.android.chrome;action=android.intent.action.VIEW;end;
-                
-                // 2. Fallback метод
-                setTimeout(() => {
-                    window.open(targetUrl, '_system');
-                }, 300);
+                // iOS: кастомная схема
+                window.location.href = 'x-safari-' + targetUrl;
+            } else if (/Android/i.test(navigator.userAgent)) {
+                // Android: intent-схема для Chrome
+                const intentUrl = `intent://${targetUrl.replace('https://', '')}#Intent;scheme=https;package=com.android.chrome;action=android.intent.action.VIEW;end`;
+                window.location.href = intentUrl;
+            } else {
+                // Другое устройство: fallback
+                window.open(targetUrl, '_blank');
             }
         }
-        
-        // Пробуем открыть автоматически
+
         setTimeout(openDirectlyInBrowser, 200);
     </script>
     <style>

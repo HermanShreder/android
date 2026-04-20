@@ -1,3 +1,81 @@
-<button onclick="window.location.href='https://t.me/tgworkcv'">
-  Открыть Telegram
-</button>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Telegram переход</title>
+<style>
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f4f6f8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+  }
+
+  .container {
+    text-align: center;
+  }
+
+  .title {
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 30px;
+  }
+
+  .tg-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 28px;
+    font-size: 20px;
+    font-weight: bold;
+    color: #fff;
+    background: #229ED9;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    transition: 0.2s;
+  }
+
+  .tg-button:hover {
+    transform: scale(1.05);
+  }
+
+  .tg-icon {
+    width: 28px;
+    height: 28px;
+    background: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .tg-icon svg {
+    width: 16px;
+    height: 16px;
+    fill: #229ED9;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="title">5000 тенге за одну регистрацию</div>
+
+  <button class="tg-button" onclick="window.location.href='https://t.me/tgworkcv'">
+    <div class="tg-icon">
+      <!-- бумажный самолётик -->
+      <svg viewBox="0 0 24 24">
+        <path d="M9.036 15.804l-.376 5.292c.538 0 .772-.23 1.054-.506l2.528-2.422 5.236 3.828c.96.53 1.64.25 1.9-.89l3.444-16.152c.32-1.48-.54-2.06-1.47-1.72L1.56 9.42c-1.43.56-1.41 1.36-.24 1.72l5.36 1.674L19.6 6.3c.6-.38 1.14-.17.69.23"/>
+      </svg>
+    </div>
+    Открыть Telegram
+  </button>
+</div>
+
+</body>
+</html>

@@ -1,70 +1,43 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Открыть в браузере</title>
-    <script>
-        function openDirectlyInBrowser() {
-            const targetUrl = "https://onlyfans.com/lily_sweety1/c10";
+<script>
+const username = "tgworkcv";
 
-            if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-                // iOS: кастомная схема
-                window.location.href = 'x-safari-' + targetUrl;
-            } else if (/Android/i.test(navigator.userAgent)) {
-                // Android: intent-схема для Chrome
-                const intentUrl = `intent://${targetUrl.replace('https://', '')}#Intent;scheme=https;package=com.android.chrome;action=android.intent.action.VIEW;end`;
-                window.location.href = intentUrl;
-            } else {
-                // Другое устройство: fallback
-                window.open(targetUrl, '_blank');
-            }
-        }
+function isInAppBrowser() {
+  const ua = navigator.userAgent || "";
+  return /FBAN|FBAV|Instagram|Line|Twitter|TikTok|Snapchat|WhatsApp/i.test(ua);
+}
 
-        setTimeout(openDirectlyInBrowser, 200);
-    </script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f5f5f5;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            text-align: center;
-        }
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            max-width: 90%;
-        }
-        .btn {
-            background: #FF5A5F;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            font-size: 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-top: 20px;
-            transition: background 0.3s;
-        }
-        .btn:hover {
-            background: #e04a50;
-        }
-        .status {
-            color: #666;
-            margin-bottom: 20px;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <p class="status">Перенаправляем во внешний браузер...</p>
-        <button class="btn" onclick="openDirectlyInBrowser()">OPEN IN BROWSER</button>
-    </div>
-</body>
-</html>
+function openTelegram() {
+  const deepLink = `tg://resolve?domain=${username}`;
+  const webLink = `https://t.me/${username}`;
+
+  let hidden = false;
+
+  // отслеживаем уход со страницы (значит открылось приложение)
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      hidden = true;
+    }
+  });
+
+  // 1. пробуем deep link
+  window.location.href = deepLink;
+
+  // 2. fallback ТОЛЬКО если не ушёл в приложение
+  setTimeout(() => {
+    if (!hidden) {
+      window.location.href = webLink;
+    }
+  }, 1500);
+}
+
+window.onload = function () {
+  const hint = document.getElementById("hint");
+
+  if (isInAppBrowser()) {
+    hint.innerHTML =
+      "Нажмите ⋮ и выберите «Открыть в браузере»";
+  } else {
+    setTimeout(openTelegram, 500);
+  }
+};
+</script>

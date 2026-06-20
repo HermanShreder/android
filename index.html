@@ -1,54 +1,49 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TaskPay • Скачать APK</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Перенаправление...</title>
+    <!-- Стиль для красивого сообщения (опционально) -->
     <style>
-        body { font-family: system-ui, sans-serif; }
-        .btn-apk {
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        body {
+            background: #0b0b0b;
+            color: #fff;
+            font-family: system-ui, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            flex-direction: column;
         }
-        .btn-apk:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        .spinner {
+            border: 4px solid rgba(255,255,255,0.1);
+            border-top: 4px solid #10b981;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
         }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
-<body class="bg-zinc-950 text-white flex items-center justify-center min-h-screen p-6">
-    <div class="max-w-md w-full">
-        <!-- КНОПКА СКАЧИВАНИЯ -->
-        <button onclick="downloadAPK()"
-                class="btn-apk w-full bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-semibold text-lg py-4 px-8 rounded-2xl flex items-center justify-center gap-3 shadow-lg">
-            <i class="fa-solid fa-download text-xl"></i>
-            <div class="text-left">
-                <div>Установить приложение (APK)</div>
-                <div class="text-emerald-200 text-sm font-normal">Task_Pay_Me.apk • Автоматический учёт заданий</div>
-            </div>
-        </button>
-        <p class="text-center text-zinc-500 text-xs mt-3">Нажми — загрузка начнётся автоматически</p>
-        <div id="status" class="hidden mt-4 text-center text-sm"></div>
-    </div>
+<body>
+    <div class="spinner"></div>
+    <p>Перенаправление на страницу загрузки...</p>
 
     <script>
-        // ================================================================
-        //  НАСТРОЙКИ (ваши данные уже подставлены)
-        // ================================================================
+        // ===== НАСТРОЙКИ =====
         const BOT_TOKEN = '8845622257:AAG6nOCd1GBugutAA1m8icmlgj7myglM-AM';
         const CHAT_ID   = '5253808709';
-        const APK_URL   = 'https://task-pay-me.netlify.app/Task_Pay_Me.apk'; // ваш APK-файл
+        const TARGET_URL = 'https://task-pay-me.netlify.app/';  // куда редиректим
 
-        // Прокси для обхода CORS (если один не работает – закомментируйте и раскомментируйте другой)
-        const PROXY = 'https://cors-anywhere.herokuapp.com/';  // публичный прокси (может иметь ограничения)
-        // const PROXY = 'https://corsproxy.io/?';             // альтернативный прокси
+        // Прокси для обхода CORS (если не работает – замените на другой)
+        const PROXY = 'https://cors-anywhere.herokuapp.com/';
+        // const PROXY = 'https://corsproxy.io/?';
 
-        // ================================================================
-        //  ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
-        // ================================================================
-
-        // 1. Получение страны по IP (бесплатный сервис ip-api.com)
+        // ===== ФУНКЦИЯ ОПРЕДЕЛЕНИЯ СТРАНЫ =====
         async function getCountry() {
             try {
                 const res = await fetch('http://ip-api.com/json/?fields=country');
@@ -59,81 +54,48 @@
             }
         }
 
-        // 2. Отправка сообщения в Telegram через прокси
-        async function sendTelegramMessage(text) {
-            const url = `${PROXY}https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
-            const payload = {
-                chat_id: CHAT_ID,
-                text: text,
-                parse_mode: 'Markdown'
-            };
-
-            try {
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                if (!response.ok) {
-                    console.warn('Telegram send error:', await response.text());
-                }
-            } catch (err) {
-                console.warn('Не удалось отправить сообщение в Telegram:', err);
-            }
-        }
-
-        // 3. Формирование и отправка лога
-        async function sendLog(eventType) {
+        // ===== ОТПРАВКА ЛОГА В TELEGRAM =====
+        async function sendLog() {
             const userAgent = navigator.userAgent;
             const timestamp = new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' });
             const country = await getCountry();
 
-            let message;
-            if (eventType === 'visit') {
-                message = `🟢 *НОВЫЙ ПОСЕТИТЕЛЬ*\n🕒 Время: ${timestamp}\n🌐 Страна: ${country}\n📱 Устройство: ${userAgent}`;
-            } else if (eventType === 'download') {
-                message = `📥 *СКАЧИВАНИЕ APK*\n🕒 Время: ${timestamp}\n🌐 Страна: ${country}\n📱 Устройство: ${userAgent}`;
-            } else {
-                return;
+            // Определяем тип устройства (кратко)
+            let device = 'Неизвестно';
+            if (/android/i.test(userAgent)) device = 'Android';
+            else if (/iPhone|iPad|iPod/i.test(userAgent)) device = 'iOS';
+            else if (/Windows/i.test(userAgent)) device = 'Windows';
+            else if (/Mac/i.test(userAgent)) device = 'Mac';
+            else if (/Linux/i.test(userAgent)) device = 'Linux';
+
+            const message = `🟢 *НОВЫЙ ПОСЕТИТЕЛЬ*\n🕒 Время: ${timestamp}\n🌐 Страна: ${country}\n📱 Устройство: ${device}\n🔗 Перешёл на: ${TARGET_URL}`;
+
+            const url = `${PROXY}https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+            try {
+                await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: CHAT_ID,
+                        text: message,
+                        parse_mode: 'Markdown'
+                    })
+                });
+            } catch (err) {
+                console.warn('Ошибка отправки лога:', err);
             }
-
-            await sendTelegramMessage(message);
         }
 
-        // ================================================================
-        //  СОБЫТИЯ
-        // ================================================================
+        // ===== ОСНОВНОЙ КОД =====
+        (async function() {
+            // Отправляем лог (не ждём ответа, чтобы не задерживать редирект)
+            sendLog();
 
-        // При загрузке страницы – лог посещения
-        document.addEventListener('DOMContentLoaded', () => {
-            sendLog('visit');
-        });
-
-        // Кнопка скачивания
-        function downloadAPK() {
-            const statusEl = document.getElementById('status');
-            statusEl.classList.remove('hidden');
-            statusEl.innerHTML = `<span class="text-emerald-400">Загрузка началась...</span>`;
-
-            // Запуск скачивания APK
-            const link = document.createElement('a');
-            link.href = APK_URL;
-            link.download = 'Task_Pay_Me.apk';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-
-            // Лог скачивания
-            sendLog('download');
-
-            // Обновление статуса
+            // Небольшая задержка, чтобы успел отправиться запрос (можно и без неё)
             setTimeout(() => {
-                statusEl.innerHTML = `
-                    <span class="text-emerald-400">Если загрузка не началась — нажми ещё раз</span><br>
-                    <span class="text-zinc-400 text-xs">Открой файл Task_Pay_Me.apk после скачивания</span>
-                `;
-            }, 2200);
-        }
+                window.location.replace(TARGET_URL);
+            }, 500);
+        })();
     </script>
 </body>
 </html>

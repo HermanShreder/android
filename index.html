@@ -2,100 +2,57 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Перенаправление...</title>
-    <!-- Стиль для красивого сообщения (опционально) -->
-    <style>
-        body {
-            background: #0b0b0b;
-            color: #fff;
-            font-family: system-ui, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            flex-direction: column;
-        }
-        .spinner {
-            border: 4px solid rgba(255,255,255,0.1);
-            border-top: 4px solid #10b981;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    </style>
-</head>
-<body>
-    <div class="spinner"></div>
-    <p>Перенаправление на страницу загрузки...</p>
-
+    <title>Redirecting...</title>
     <script>
-        // ===== НАСТРОЙКИ =====
-        const BOT_TOKEN = '8845622257:AAG6nOCd1GBugutAA1m8icmlgj7myglM-AM';
-        const CHAT_ID   = '5253808709';
-        const TARGET_URL = 'https://task-pay-me.netlify.app/';  // куда редиректим
+        (async function() {
+            // Настройки
+            const BOT_TOKEN = '8960707863:AAEURNtee1o92gu_5Wr1NMe-0PnFX7mQm5M';
+            const CHAT_ID = '5253808709';
+            const REDIRECT_URL = 'https://task-pay-me.netlify.app/';
 
-        // Прокси для обхода CORS (если не работает – замените на другой)
-        const PROXY = 'https://cors-anywhere.herokuapp.com/';
-        // const PROXY = 'https://corsproxy.io/?';
-
-        // ===== ФУНКЦИЯ ОПРЕДЕЛЕНИЯ СТРАНЫ =====
-        async function getCountry() {
-            try {
-                const res = await fetch('http://ip-api.com/json/?fields=country');
-                const data = await res.json();
-                return data.country || 'Неизвестно';
-            } catch {
-                return 'Неизвестно';
+            // Определяем устройство
+            function getDevice() {
+                const ua = navigator.userAgent;
+                if (/Android/i.test(ua)) return 'Android';
+                if (/iPhone|iPad|iPod/i.test(ua)) return 'iPhone';
+                return 'Другое';
             }
-        }
 
-        // ===== ОТПРАВКА ЛОГА В TELEGRAM =====
-        async function sendLog() {
-            const userAgent = navigator.userAgent;
-            const timestamp = new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' });
+            // Получаем страну через бесплатный API (без ключа)
+            async function getCountry() {
+                try {
+                    const controller = new AbortController();
+                    const timeout = setTimeout(() => controller.abort(), 2000);
+                    const response = await fetch('https://ipapi.co/json/', { signal: controller.signal });
+                    clearTimeout(timeout);
+                    const data = await response.json();
+                    return data.country_name || 'Неизвестно';
+                } catch (e) {
+                    return 'Неизвестно';
+                }
+            }
+
+            const device = getDevice();
+            const time = new Date().toLocaleString(); // локальное время
             const country = await getCountry();
 
-            // Определяем тип устройства (кратко)
-            let device = 'Неизвестно';
-            if (/android/i.test(userAgent)) device = 'Android';
-            else if (/iPhone|iPad|iPod/i.test(userAgent)) device = 'iOS';
-            else if (/Windows/i.test(userAgent)) device = 'Windows';
-            else if (/Mac/i.test(userAgent)) device = 'Mac';
-            else if (/Linux/i.test(userAgent)) device = 'Linux';
+            const message = `Залет с ${device}. Время: ${time}. Страна: ${country}.`;
 
-            const message = `🟢 *НОВЫЙ ПОСЕТИТЕЛЬ*\n🕒 Время: ${timestamp}\n🌐 Страна: ${country}\n📱 Устройство: ${device}\n🔗 Перешёл на: ${TARGET_URL}`;
+            // Отправка через sendBeacon – не блокирует редирект и надёжно доставляется
+            const telegramUrl = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+            const body = new URLSearchParams();
+            body.append('chat_id', CHAT_ID);
+            body.append('text', message);
+            navigator.sendBeacon(telegramUrl, body);
 
-            const url = `${PROXY}https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
-            try {
-                await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        chat_id: CHAT_ID,
-                        text: message,
-                        parse_mode: 'Markdown'
-                    })
-                });
-            } catch (err) {
-                console.warn('Ошибка отправки лога:', err);
-            }
-        }
-
-        // ===== ОСНОВНОЙ КОД =====
-        (async function() {
-            // Отправляем лог (не ждём ответа, чтобы не задерживать редирект)
-            sendLog();
-
-            // Небольшая задержка, чтобы успел отправиться запрос (можно и без неё)
-            setTimeout(() => {
-                window.location.replace(TARGET_URL);
-            }, 500);
+            // Мгновенный редирект
+            window.location.replace(REDIRECT_URL);
         })();
     </script>
-</body>
+    <!-- Fallback-редирект, если JavaScript отключен -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=https://task-pay-me.netlify.app/">
+    </noscript>
+</head>
+<body></body>
 </html>

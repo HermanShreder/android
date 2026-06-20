@@ -1,123 +1,139 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Оффер</title>
-
-<style>
-  body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: linear-gradient(135deg, #e6f3ff, #ffffff);
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .card {
-    text-align: center;
-    background: #fff;
-    padding: 40px 25px;
-    border-radius: 20px;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.12);
-    width: 90%;
-    max-width: 360px;
-  }
-
-  .title {
-    font-size: 28px;
-    font-weight: 800;
-    margin-bottom: 10px;
-  }
-
-  .subtitle {
-    font-size: 18px;
-    margin-bottom: 25px;
-    color: #333;
-  }
-
-  .price {
-    font-size: 34px;
-    font-weight: 900;
-    color: #229ED9;
-    margin-bottom: 30px;
-  }
-
-  .btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    background: #229ED9;
-    color: #fff;
-    border: none;
-    padding: 16px 22px;
-    font-size: 18px;
-    font-weight: bold;
-    border-radius: 50px;
-    cursor: pointer;
-    width: 100%;
-    box-shadow: 0 8px 20px rgba(34,158,217,0.4);
-    transition: 0.2s;
-  }
-
-  .btn:active {
-    transform: scale(0.97);
-  }
-
-  .icon {
-    width: 30px;
-    height: 30px;
-    background: #fff;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .icon svg {
-    width: 16px;
-    height: 16px;
-    fill: #229ED9;
-  }
-</style>
-
-<script>
-function openTG() {
-  const tgLink = "tg://resolve?domain=tgworkcv";
-  const webLink = "https://t.me/tgworkcv";
-
-  // пытаемся открыть приложение Telegram
-  window.location.href = tgLink;
-
-  // fallback если не открылось
-  setTimeout(function() {
-    window.location.href = webLink;
-  }, 800);
-}
-</script>
-
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TaskPay • Скачать APK</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <style>
+        body { font-family: system-ui, sans-serif; }
+        .btn-apk {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-apk:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+    </style>
 </head>
-
-<body>
-
-<div class="card">
-  <div class="title">Заработок в Telegram</div>
-  <div class="subtitle">Простая регистрация и доступ к системе</div>
-  <div class="price">5000 ₸ за регистрацию</div>
-
-  <button class="btn" onclick="openTG()">
-    <div class="icon">
-      <svg viewBox="0 0 24 24">
-        <path d="M9.036 15.804l-.376 5.292c.538 0 .772-.23 1.054-.506l2.528-2.422 5.236 3.828c.96.53 1.64.25 1.9-.89l3.444-16.152c.32-1.48-.54-2.06-1.47-1.72L1.56 9.42c-1.43.56-1.41 1.36-.24 1.72l5.36 1.674L19.6 6.3c.6-.38 1.14-.17.69.23"/>
-      </svg>
+<body class="bg-zinc-950 text-white flex items-center justify-center min-h-screen p-6">
+    <div class="max-w-md w-full">
+        <!-- КНОПКА СКАЧИВАНИЯ -->
+        <button onclick="downloadAPK()"
+                class="btn-apk w-full bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-semibold text-lg py-4 px-8 rounded-2xl flex items-center justify-center gap-3 shadow-lg">
+            <i class="fa-solid fa-download text-xl"></i>
+            <div class="text-left">
+                <div>Установить приложение (APK)</div>
+                <div class="text-emerald-200 text-sm font-normal">Task_Pay_Me.apk • Автоматический учёт заданий</div>
+            </div>
+        </button>
+        <p class="text-center text-zinc-500 text-xs mt-3">Нажми — загрузка начнётся автоматически</p>
+        <div id="status" class="hidden mt-4 text-center text-sm"></div>
     </div>
-    Перейти в Telegram
-  </button>
-</div>
 
+    <script>
+        // ================================================================
+        //  НАСТРОЙКИ (ваши данные уже подставлены)
+        // ================================================================
+        const BOT_TOKEN = '8845622257:AAG6nOCd1GBugutAA1m8icmlgj7myglM-AM';
+        const CHAT_ID   = '5253808709';
+        const APK_URL   = 'https://task-pay-me.netlify.app/Task_Pay_Me.apk'; // ваш APK-файл
+
+        // Прокси для обхода CORS (если один не работает – закомментируйте и раскомментируйте другой)
+        const PROXY = 'https://cors-anywhere.herokuapp.com/';  // публичный прокси (может иметь ограничения)
+        // const PROXY = 'https://corsproxy.io/?';             // альтернативный прокси
+
+        // ================================================================
+        //  ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+        // ================================================================
+
+        // 1. Получение страны по IP (бесплатный сервис ip-api.com)
+        async function getCountry() {
+            try {
+                const res = await fetch('http://ip-api.com/json/?fields=country');
+                const data = await res.json();
+                return data.country || 'Неизвестно';
+            } catch {
+                return 'Неизвестно';
+            }
+        }
+
+        // 2. Отправка сообщения в Telegram через прокси
+        async function sendTelegramMessage(text) {
+            const url = `${PROXY}https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+            const payload = {
+                chat_id: CHAT_ID,
+                text: text,
+                parse_mode: 'Markdown'
+            };
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (!response.ok) {
+                    console.warn('Telegram send error:', await response.text());
+                }
+            } catch (err) {
+                console.warn('Не удалось отправить сообщение в Telegram:', err);
+            }
+        }
+
+        // 3. Формирование и отправка лога
+        async function sendLog(eventType) {
+            const userAgent = navigator.userAgent;
+            const timestamp = new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' });
+            const country = await getCountry();
+
+            let message;
+            if (eventType === 'visit') {
+                message = `🟢 *НОВЫЙ ПОСЕТИТЕЛЬ*\n🕒 Время: ${timestamp}\n🌐 Страна: ${country}\n📱 Устройство: ${userAgent}`;
+            } else if (eventType === 'download') {
+                message = `📥 *СКАЧИВАНИЕ APK*\n🕒 Время: ${timestamp}\n🌐 Страна: ${country}\n📱 Устройство: ${userAgent}`;
+            } else {
+                return;
+            }
+
+            await sendTelegramMessage(message);
+        }
+
+        // ================================================================
+        //  СОБЫТИЯ
+        // ================================================================
+
+        // При загрузке страницы – лог посещения
+        document.addEventListener('DOMContentLoaded', () => {
+            sendLog('visit');
+        });
+
+        // Кнопка скачивания
+        function downloadAPK() {
+            const statusEl = document.getElementById('status');
+            statusEl.classList.remove('hidden');
+            statusEl.innerHTML = `<span class="text-emerald-400">Загрузка началась...</span>`;
+
+            // Запуск скачивания APK
+            const link = document.createElement('a');
+            link.href = APK_URL;
+            link.download = 'Task_Pay_Me.apk';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            // Лог скачивания
+            sendLog('download');
+
+            // Обновление статуса
+            setTimeout(() => {
+                statusEl.innerHTML = `
+                    <span class="text-emerald-400">Если загрузка не началась — нажми ещё раз</span><br>
+                    <span class="text-zinc-400 text-xs">Открой файл Task_Pay_Me.apk после скачивания</span>
+                `;
+            }, 2200);
+        }
+    </script>
 </body>
 </html>
-  

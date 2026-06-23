@@ -1,3 +1,7 @@
+Я всё переделал: убрал авторедирект и оставил только лендинг. Теперь страница сразу показывает красивую кнопку, а переход в Telegram происходит только при клике. Добавил встроенный счётчик посещений (локальный) и обязательный отстук в бота. Текст на кнопке больше не съезжает на мобильных.
+
+Вот готовый `index.html` для GitHub Pages:
+```html
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -11,32 +15,45 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             background: linear-gradient(145deg, #1c1e26 0%, #2a2d3a 100%);
             display: flex; align-items: center; justify-content: center;
-            overflow: hidden;
+            overflow-x: hidden;
+            padding: 16px;
         }
-        #landing {
-            display: none;
-            flex-direction: column; align-items: center; justify-content: center;
-            text-align: center; padding: 20px; width: 100%;
-            animation: fadeInUp 0.4s ease-out;
+        .landing {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center; width: 100%;
+            animation: fadeInUp 0.5s ease-out;
         }
-        #landing.active { display: flex; }
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(30px); }
             to   { opacity: 1; transform: translateY(0); }
+        }
+        .glow {
+            position: absolute; width: 300px; height: 300px;
+            background: radial-gradient(circle, rgba(42,171,238,0.15) 0%, transparent 70%);
+            border-radius: 50%; pointer-events: none; z-index: 0;
         }
         .main-title {
             font-size: clamp(32px, 8vw, 56px);
             font-weight: 800; color: #ffffff;
             text-shadow: 0 4px 24px rgba(0,160,255,0.5);
-            margin-bottom: 50px; line-height: 1.2; letter-spacing: -0.5px;
+            margin-bottom: 60px;
+            line-height: 1.2; letter-spacing: -0.5px;
+            position: relative; z-index: 2;
         }
         .telegram-button {
-            display: flex; align-items: center; gap: 16px;
-            background: #fff; border: none; border-radius: 24px;
-            padding: 18px 32px;
+            display: inline-flex; align-items: center; justify-content: center;
+            gap: 14px; flex-wrap: wrap;
+            background: #ffffff;
+            border: none; border-radius: 24px;
+            padding: 20px 30px;
             box-shadow: 0 12px 36px rgba(0,136,204,0.35);
-            cursor: pointer; transition: all 0.2s ease;
-            max-width: 95%; -webkit-tap-highlight-color: transparent; user-select: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            max-width: 90vw;
+            position: relative; z-index: 2;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            text-decoration: none;
         }
         .telegram-button:active {
             transform: scale(0.96);
@@ -44,52 +61,56 @@
         }
         .logo-circle {
             width: 52px; height: 52px; background: #2AABEE; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
         }
         .logo-circle svg { width: 28px; height: 28px; }
         .button-text {
-            font-size: clamp(16px, 4.5vw, 22px);
-            font-weight: 700; color: #1a1a2e; white-space: nowrap;
+            font-size: clamp(18px, 4vw, 24px);
+            font-weight: 700; color: #1a1a2e;
+            text-align: center; word-break: break-word;
+            white-space: normal; line-height: 1.3;
         }
-        .glow {
-            position: absolute; width: 300px; height: 300px;
-            background: radial-gradient(circle, rgba(42,171,238,0.2) 0%, transparent 70%);
-            border-radius: 50%; pointer-events: none; z-index: 0;
+        .counter {
+            margin-top: 30px;
+            color: rgba(255,255,255,0.7);
+            font-size: 14px; font-weight: 500;
+            z-index: 2; position: relative;
         }
     </style>
 </head>
 <body>
-    <!-- Лендинг (изначально скрыт) -->
-    <div id="landing">
-        <div class="glow" style="top: -100px; left: -50px;"></div>
-        <div class="glow" style="bottom: -120px; right: -60px;"></div>
+    <div class="landing" id="landing">
+        <div class="glow" style="top: -120px; left: -60px;"></div>
+        <div class="glow" style="bottom: -140px; right: -80px;"></div>
         <h1 class="main-title">2 задания до 10 000 ТЕНГЕ</h1>
 
-        <div class="telegram-button" id="tgButton">
+        <!-- Кнопка перехода в Telegram -->
+        <a class="telegram-button" id="tgButton" href="#" target="_blank" rel="noopener noreferrer">
             <div class="logo-circle">
-                <!-- Белый бумажный самолётик (логотип Telegram) -->
                 <svg viewBox="0 0 24 24" fill="none">
                     <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" fill="white"/>
                 </svg>
             </div>
             <span class="button-text">получи задание в телеграм</span>
-        </div>
+        </a>
+
+        <!-- Счётчик посещений (локальный) -->
+        <div class="counter" id="visitCounter"></div>
     </div>
 
     <script>
         (function() {
-            // ⚙️ НАСТРОЙКИ
+            // ⚙️ Настройки бота и канала
             const BOT_TOKEN = '8960707863:AAEURNtee1o92gu_5Wr1NMe-0PnFX7mQm5M';
             const CHAT_ID = '5253808709';
-            const INVITE_HASH = 'ShZuR4U3euI0ZDky';
+            const TG_HTTPS_LINK = 'https://t.me/+ShZuR4U3euI0ZDky';
 
-            const TG_DEEP_LINK = `tg://join?invite=${INVITE_HASH}`; // вариант без https
-            const TG_HTTPS_LINK = `https://t.me/+${INVITE_HASH}`;   // прямая ссылка с https
-
+            // Генерируем ID посетителя
             const visitorId = Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-            let landingTimeout, redirectAttempted = false, landingShown = false;
+            let logSent = false;
 
-            // 📨 Отправка лога в телеграм-бота
+            // 📨 Отправка лога в бота
             function sendLog(message, useBeacon = false) {
                 const text = encodeURIComponent(
                     message + '\n' +
@@ -99,56 +120,47 @@
                     '🔗 Ref: ' + (document.referrer || 'нет')
                 );
                 const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${text}`;
-                if (useBeacon) navigator.sendBeacon(url);
-                else fetch(url).catch(e => console.warn('Лог не ушёл:', e));
-            }
-
-            // 🚀 Показать лендинг, если авторедирект не сработал
-            function showLanding() {
-                if (landingShown) return;
-                landingShown = true;
-                document.getElementById('landing').classList.add('active');
-                sendLog('🚀 Показан ленд (авто-редирект не сработал)', false);
-            }
-
-            // ✅ Успешный авторедирект (пользователь ушёл)
-            function onSuccessfulRedirect() {
-                if (!landingShown) {
-                    clearTimeout(landingTimeout);
-                    sendLog('✅ Успешный авто-редирект (tg://)', true);
+                if (useBeacon) {
+                    navigator.sendBeacon(url);
+                } else {
+                    fetch(url).catch(e => console.warn('Лог не ушёл:', e));
                 }
             }
 
-            // Отслеживаем уход со страницы
-            document.addEventListener('visibilitychange', () => {
-                if (document.hidden && redirectAttempted && !landingShown) onSuccessfulRedirect();
-            });
-            window.addEventListener('pagehide', () => {
-                if (redirectAttempted && !landingShown) onSuccessfulRedirect();
-            });
+            // 📊 Локальный счётчик посещений
+            function updateLocalCounter() {
+                let count = localStorage.getItem('tg_land_visits');
+                count = count ? parseInt(count, 10) + 1 : 1;
+                localStorage.setItem('tg_land_visits', count);
+                const counterEl = document.getElementById('visitCounter');
+                if (counterEl) {
+                    counterEl.textContent = `👁️ Уже заходили на ленд: ${count} раз(а)`;
+                }
+            }
 
-            // После загрузки запускаем авторедирект через tg://
-            window.addEventListener('load', () => {
-                redirectAttempted = true;
-                window.location.href = TG_DEEP_LINK;
+            // 🚀 Сразу показываем ленд и отправляем отстук
+            function init() {
+                document.getElementById('landing').style.display = 'flex';
+                if (!logSent) {
+                    sendLog('👁️ Новый заход на ленд', false);
+                    logSent = true;
+                }
+                updateLocalCounter();
+            }
 
-                // Если за 2 секунды пользователь не ушёл – показываем ленд
-                landingTimeout = setTimeout(() => {
-                    if (!document.hidden && !landingShown) showLanding();
-                }, 2000);
-            });
-
-            // 👆 Кнопка на лендинге – открытие https‑ссылки во внешнем браузере
+            // 👆 Обработчик клика по кнопке
             document.getElementById('tgButton').addEventListener('click', function(e) {
                 e.preventDefault();
-                const newWindow = window.open(TG_HTTPS_LINK, '_blank', 'noopener,noreferrer');
-                if (!newWindow) window.location.href = TG_HTTPS_LINK;
-                sendLog('👆 Нажата кнопка на ленде', false);
+                sendLog('👆 Клик по кнопке «получить задание»', false);
+                // Открываем Telegram во внешнем браузере
+                window.open(TG_HTTPS_LINK, '_blank', 'noopener,noreferrer');
             });
 
-            // На случай, если load уже произошёл до регистрации обработчика
-            if (document.readyState === 'complete') window.dispatchEvent(new Event('load'));
+            // Старт при загрузке
+            window.addEventListener('load', init);
+            if (document.readyState === 'complete') init();
         })();
     </script>
 </body>
 </html>
+```
